@@ -5,3 +5,6 @@ html,body,ol,ul{
     font-family: Arial, Helvetica, sans-serif;
 }
 
+img{
+    max-width: 300px;
+}

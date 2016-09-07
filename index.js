@@ -1,1 +1,1 @@
-console.log(1);
+Popup.init(document.getElementById('imgs'));
