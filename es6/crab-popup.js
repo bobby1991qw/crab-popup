@@ -190,9 +190,27 @@
 
                 this.root.forEach((r) => {
 
-                    utils.addEvent(r, 'click', this.opts.selector, (i, imgs) => {
-                        this.setImg(i, imgs);;
-                    });
+                    utils.addEvent(r, 'click', this.opts.selector, ((i, imgs) => {
+                        if (data.imgs.indexOf(imgs[i]) > -1) {
+                            console.time('noMatch');                            
+                            this.setImg(i);
+                            console.timeEnd('noMatch');
+                        } else {
+                            console.time('match');    
+                            const contexts = [].slice.call(r.querySelectorAll(this.opts.contextSelector), 0),
+                                img = imgs[i];
+
+                            for (let index = contexts.length - 1; index >= 0; index--) {
+                                const realImgs = [].slice.call(contexts[index].querySelectorAll(this.opts.selector), 0);
+                                if (realImgs.indexOf(img) > -1) {
+                                    this.setImg(i, realImgs);
+                                    break;
+                                }
+                            }
+
+                            console.timeEnd('match');
+                        }
+                    }).bind(r));
                 });
 
                 if (!this.isMobile) {
@@ -294,7 +312,7 @@
                     ui.close();
                 });
             },
-            setImg(i, imgs) {
+            setImg(i, imgs = data.imgs) {
                 data.setImgs(imgs);
                 data.setImg(i);
                 ui.setImg();
