@@ -154,12 +154,14 @@
                 this.currentImg = new_Img;
                 ctrl.isMobile || (page_num.innerText = data.currentIndex + 1 + ' / ' + data.imgs.length);
                 box.style.display = 'block';
+                document.body.style.overflow = 'hidden';
                 box.classList.add('show');
             },
             close: function close() {
                 var box = this.box;
 
                 box.classList.remove('show');
+                document.body.style.overflow = 'auto';
                 setTimeout(function () {
                     box.style.display = 'none';
                 }, 250);
@@ -196,24 +198,21 @@
                 this.root.forEach(function (r) {
 
                     utils.addEvent(r, 'click', _this2.opts.selector, function (i, imgs) {
-                        if (data.imgs.indexOf(imgs[i]) > -1) {
-                            console.time('noMatch');
-                            _this2.setImg(i);
-                            console.timeEnd('noMatch');
+                        var oldIndex = data.imgs.indexOf(imgs[i]);
+                        if (oldIndex > -1) {
+                            _this2.setImg(oldIndex);
                         } else {
-                            console.time('match');
                             var contexts = [].slice.call(r.querySelectorAll(_this2.opts.contextSelector), 0),
                                 img = imgs[i];
 
                             for (var index = contexts.length - 1; index >= 0; index--) {
-                                var realImgs = [].slice.call(contexts[index].querySelectorAll(_this2.opts.selector), 0);
-                                if (realImgs.indexOf(img) > -1) {
-                                    _this2.setImg(i, realImgs);
+                                var realImgs = [].slice.call(contexts[index].querySelectorAll(_this2.opts.selector), 0),
+                                    realIndex = realImgs.indexOf(img);
+                                if (realIndex > -1) {
+                                    _this2.setImg(realIndex, realImgs);
                                     break;
                                 }
                             }
-
-                            console.timeEnd('match');
                         }
                     }.bind(r));
                 });

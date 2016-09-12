@@ -56,17 +56,19 @@
                     context = utils.slice.call(document.querySelectorAll(context), 0);
                 }
 
+                // 将context设置成数组
                 context = [].concat(context);
 
                 if (arguments.length > 3) {
+                    // 事件代理
                     context.forEach((ctx) => {
-                        ctx.addEventListener(type, () => {
-                            const trueTag = event.srcElement,
+                        ctx.addEventListener(type, (e) => {
+                            const trueTag = e.srcElement || e.originalTarget,
                                 tags = this.slice.call(ctx.querySelectorAll(tag), 0),
                                 index = tags.indexOf(trueTag);
 
                             if (index > -1) {
-                                callback.call(tags[index], index, tags);
+                                callback.call(tags[index], e, index, tags);
                             }
                         })
                     });
@@ -125,8 +127,9 @@
                     img_box = pane.querySelector('.img_box'),
                     page_num = pane.querySelector('.page_num'),
                     new_Img = utils.createEle('img', {
-                        onload: () => {
-                            const img = event.target,
+                        onload: (e) => {
+                            // 设置图片大小
+                            const img = e.target,
                                 style = window.getComputedStyle(img),
                                 width = parseInt(style.width),
                                 height = parseInt(style.height),
@@ -151,12 +154,14 @@
                 this.currentImg = new_Img;
                 ctrl.isMobile || (page_num.innerText = `${data.currentIndex + 1} / ${data.imgs.length}`);
                 box.style.display = 'block';
+                document.body.style.overflow = 'hidden';
                 box.classList.add('show');
             },
             close() {
                 const box = this.box;
 
                 box.classList.remove('show');
+                document.body.style.overflow = 'auto';
                 setTimeout(() => {
                     box.style.display = 'none';
                 }, 250);
@@ -189,26 +194,24 @@
                     close = box.querySelector('.crab_popup_close');
 
                 this.root.forEach((r) => {
-
-                    utils.addEvent(r, 'click', this.opts.selector, ((i, imgs) => {
-                        if (data.imgs.indexOf(imgs[i]) > -1) {
-                            console.time('noMatch');                            
-                            this.setImg(i);
-                            console.timeEnd('noMatch');
+                    utils.addEvent(r, 'click', this.opts.selector, ((e, i, imgs) => {                        
+                        const oldIndex = data.imgs.indexOf(imgs[i]);
+                        if (oldIndex > -1) {
+                            // 点击同组图片时无须重新获取图片
+                            this.setImg(oldIndex);
                         } else {
-                            console.time('match');    
+                            // 点击别组图片时获取图片组
                             const contexts = [].slice.call(r.querySelectorAll(this.opts.contextSelector), 0),
                                 img = imgs[i];
 
                             for (let index = contexts.length - 1; index >= 0; index--) {
-                                const realImgs = [].slice.call(contexts[index].querySelectorAll(this.opts.selector), 0);
-                                if (realImgs.indexOf(img) > -1) {
-                                    this.setImg(i, realImgs);
+                                const realImgs = [].slice.call(contexts[index].querySelectorAll(this.opts.selector), 0),
+                                    realIndex = realImgs.indexOf(img);
+                                if (realIndex > -1) {
+                                    this.setImg(realIndex, realImgs);
                                     break;
                                 }
                             }
-
-                            console.timeEnd('match');
                         }
                     }).bind(r));
                 });
@@ -238,13 +241,13 @@
                         next.classList.remove('show');
                     });
 
-                    utils.addEvent(prev, 'click', () => {
-                        event.stopPropagation();
+                    utils.addEvent(prev, 'click', (e) => {
+                        e.stopPropagation();
                         this.prev();
                     });
 
-                    utils.addEvent(next, 'click', () => {
-                        event.stopPropagation();
+                    utils.addEvent(next, 'click', (e) => {
+                        e.stopPropagation();
                         this.next();
                     });
 
@@ -257,8 +260,8 @@
                     const pane = box.querySelector('#crab_popup_pane'),
                         img = pane.querySelector('img');
 
-                    utils.addEvent(pane, 'touchstart', 'img', () => {
-                        const touch = event.touches[0],
+                    utils.addEvent(pane, 'touchstart', 'img', (e) => {
+                        const touch = e.touches[0],
                             touchData = this.touch;
 
                         ui.currentImg.style.transformOrigin = `${touch.clientX}px ${touch.clientY + 10}px`;
@@ -266,8 +269,8 @@
                         touchData.y = touch.clientY;
                     });
 
-                    utils.addEvent(pane, 'touchstart', () => {
-                        const touch = event.touches[0],
+                    utils.addEvent(pane, 'touchstart', (e) => {
+                        const touch = e.touches[0],
                             touchData = this.touch;
 
                         touchData.start = true;
@@ -275,8 +278,8 @@
                         touchData.x = touch.clientX;
                     });
 
-                    utils.addEvent(pane, 'touchmove', 'img', () => {
-                        const currentY = event.touches[0].clientY,
+                    utils.addEvent(pane, 'touchmove', 'img', (e) => {
+                        const currentY = e.touches[0].clientY,
                             y = this.touch.y,
                             distance = Math.abs(currentY - y),
                             max = Math.sqrt(window.screen.height / 2);
@@ -287,9 +290,9 @@
                         }
                     });
 
-                    utils.addEvent(pane, 'touchend', () => {
+                    utils.addEvent(pane, 'touchend', (e) => {
                         const touchData = this.touch,
-                            touch = event.changedTouches[0],
+                            touch = e.changedTouches[0],
                             x = touch.clientX,
                             distance = x - touchData.x,
                             dir = distance > 0 ? 1 : -1,
@@ -307,8 +310,8 @@
                     });
                 }
 
-                utils.addEvent(close, 'click', () => {
-                    event.stopPropagation();
+                utils.addEvent(close, 'click', (e) => {
+                    e.stopPropagation();
                     ui.close();
                 });
             },
