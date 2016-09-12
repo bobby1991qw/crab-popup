@@ -191,10 +191,11 @@
             },
             bindEvent() {
                 const box = document.getElementById('crab_popup_box'),
+                    pane = box.querySelector('#crab_popup_pane'),
                     close = box.querySelector('.crab_popup_close');
 
                 this.root.forEach((r) => {
-                    utils.addEvent(r, 'click', this.opts.selector, ((e, i, imgs) => {                        
+                    utils.addEvent(r, 'click', this.opts.selector, ((e, i, imgs) => {
                         const oldIndex = data.imgs.indexOf(imgs[i]);
                         if (oldIndex > -1) {
                             // 点击同组图片时无须重新获取图片
@@ -251,14 +252,17 @@
                         this.next();
                     });
 
+                    utils.addEvent(pane, 'click', (e) => {
+                        e.stopPropagation();
+                    });
+
                     if (this.opts.maskClosable) {
                         box.addEventListener('click', () => {
                             ui.close();
                         });
                     }
                 } else {
-                    const pane = box.querySelector('#crab_popup_pane'),
-                        img = pane.querySelector('img');
+                    const img = pane.querySelector('img');
 
                     utils.addEvent(pane, 'touchstart', 'img', (e) => {
                         const touch = e.touches[0],

@@ -1,6 +1,6 @@
 Popup.init('body', {
     selector: 'img',
-    maskClosable: false,
+    // maskClosable: false,
     contextSelector: '.imgs'
 });
 
