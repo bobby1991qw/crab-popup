@@ -196,8 +196,26 @@
                 this.root.forEach(function (r) {
 
                     utils.addEvent(r, 'click', _this2.opts.selector, function (i, imgs) {
-                        _this2.setImg(i, imgs);;
-                    });
+                        if (data.imgs.indexOf(imgs[i]) > -1) {
+                            console.time('noMatch');
+                            _this2.setImg(i);
+                            console.timeEnd('noMatch');
+                        } else {
+                            console.time('match');
+                            var contexts = [].slice.call(r.querySelectorAll(_this2.opts.contextSelector), 0),
+                                img = imgs[i];
+
+                            for (var index = contexts.length - 1; index >= 0; index--) {
+                                var realImgs = [].slice.call(contexts[index].querySelectorAll(_this2.opts.selector), 0);
+                                if (realImgs.indexOf(img) > -1) {
+                                    _this2.setImg(i, realImgs);
+                                    break;
+                                }
+                            }
+
+                            console.timeEnd('match');
+                        }
+                    }.bind(r));
                 });
 
                 if (!this.isMobile) {
@@ -300,7 +318,9 @@
                     ui.close();
                 });
             },
-            setImg: function setImg(i, imgs) {
+            setImg: function setImg(i) {
+                var imgs = arguments.length <= 1 || arguments[1] === undefined ? data.imgs : arguments[1];
+
                 data.setImgs(imgs);
                 data.setImg(i);
                 ui.setImg();
