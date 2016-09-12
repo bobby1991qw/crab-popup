@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
+    <title>popup</title>
+    <style>
+        html,
+        body,
+        ol,
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        .imgs img {
+            width: 18%;
+            max-width: 300px;
+        }
+        
+        #crab_popup_box {
+            position: fixed;
+            display: none;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, .8);
+            z-index: 9999;
+            opacity: 0;
+            transition: all .25s ease-in-out;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        #crab_popup_box.show {
+            opacity: 1;
+        }
+        
+        .pc #crab_popup_pane {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            padding: 10px;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 0;
+            transform: translate(-50%, 100%);
+            transition: all .25s ease-in-out;
+            overflow: hidden;
+        }
+        
+        .mobile #crab_popup_pane {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        
+        #crab_popup_pane img {
+            display: block;
+            margin: 0 auto;
+            max-width: 1000px;
+            max-height: 800px;
+            width: 100%\9;
+            transition: all .25s ease-out;
+        }
+        
+        #crab_popup_pane .page_num {
+            font-size: 13px;
+            text-align: center;
+            padding-top: 10px;
+        }
+        
+        #crab_popup_box.pc.show #crab_popup_pane {
+            transform: translate(-50%, -50%);
+        }
+        
+        .crab_popup_close {
+            position: absolute;
+            right: 0;
+            top: 0;
+            border: 35px solid transparent;
+            border-top-color: rgba(255, 255, 255, .7);
+            border-right-color: rgba(255, 255, 255, .7);
+            z-index: 9;
+        }
+        
+        .mobile .crab_popup_close {
+            border-width: 20px;
+        }
+        
+        .mobile .crab_popup_close:after {
+            width: 15px;
+            height: 15px;
+            transform: translate(110%, -110%);
+        }
+        
+        .mobile .img_box {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            transform: translateY(-50%);
+        }
+        
+        .crab_popup_close:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: block;
+            width: 20px;
+            height: 20px;
+            transform: translate(130%, -130%);
+            transition: all .25s ease-in-out;
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAZdJREFUSA21171OwzAQAGA7avwGdAJVYmCBdwAkGFh4oLJk8qOgPgMSPzMDj1Cp/Myg0jAklcxdhZ2WJvGda0eKkja2P5/d3ilyPL65E0KMlMqviqKYwn2yA8YfVlU9kVLMMlBGcB7V9fIJHhymUhEF4wHGP4fzMsNIpZRvxpiDVLjWeg8ivQfjGNBPY/JriRFipIgijpPI88EZfBdl2RFdLEqM9ARRIfILrYuXFZwK70LRc3BsvA/dgmPhPrQV3hWnoJ1wKE5Fe2EuzkG9MBXnoiTYh4egZLgLV0p9tyUHbO87Nv7Hvsb/Mxy0n9s0aDOSbwz7nAVjp3X8bxCXBu2glCtWJ9aBywsd5k0nWSolvprPtDsWbH9IzfLKdyHMfkhVI8MWhXhclVFqcBpaUkl73IZiacNFXd9zTkn1wn2o3c0QvBemoKF4J8xBQ/BWOATl4lvwLigH34BjoFTcwTFRCr6CU6A+XKZE+/CsLH8m0MClQZuRbKcYV0gwU3xJsOm1qpa3kKvNK7xEfXDrKXdCDS6eYQKPv0KDJ9CNQhu0AAAAAElFTkSuQmCC) no-repeat;
+            background-size: contain;
+        }
+        
+        .pc .crab_popup_close:hover::after {
+            transform: translate(130%, -130%) rotate(180deg);
+        }
+        
+        #crab_popup_box .change {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 200px;
+            opacity: 0;
+            transition: all .25s ease-in-out;
+        }
+        
+        #crab_popup_box .change.show {
+            opacity: 1;
+        }
+        
+        #crab_popup_box .change:before {
+            content: '';
+            position: absolute;
+            display: block;
+            top: 50%;
+            width: 100px;
+            height: 100px;
+            border-radius: 100%;
+            background: rgba(255, 255, 255, .7);
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+        
+        #crab_popup_box .change:after {
+            content: '';
+            position: absolute;
+            display: block;
+            top: 50%;
+            width: 50px;
+            height: 50px;
+            transform: translateY(-50%);
+            opacity: .8;
+            cursor: pointer;
+        }
+        
+        #crab_popup_box .prev {
+            left: 0;
+        }
+        
+        #crab_popup_box .prev:before {
+            left: 50px;
+        }
+        
+        #crab_popup_box .prev:after {
+            left: 75px;
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAKYSURBVEjHlZVJaxRRFIW/V11dne6OioKaONEOGJIQR4xiwOkPGBz2CmpEN25EEN2IiSAq4oAbF7py4cpfIIgIaYeIUyQIDhiJimgiPXe/48Ky6CTdSXlqd86937tV9apehBBaS5PTfHDBzaYfzUPNdmRcFpm+fQ3ATvrUwiYyDDaVRv4HsIoK7OACK4BZbFFML+dn5/PVz53pAMJ06pJts1gsdqb2aZWqcneq5nbAdpjzrA6sX1w0jwgLECzjsrYGxqjpNddt8XUYQCvCLjLn2B5YBS5yzRYHx9XVBVg0x5zXLoxv5M0Nrir/dkJdHcAKKrPNKe0N8gJXnV6NDk2qrAlYjhKc0OEgrZhbpq8y+q5GbQ3AUmycHnOUeHA3dzijX6bWWpMBKWzE7Oe0Gv+tzl1zUl/e13lWEwBLsC67OcXswLrHcX2mrsbNtZgMyW6usNg3xANzhDef6vdXT7CIMvFt6gva4T7H9MYwlarSBbCW23QERtoc4OUwU6tqAk0KLdOr6nNO4oxoUBs1VwihhbQw0PitkUw4QIY4iQ/FYbo0y0ek1G7TfM+GA0CGKLzTZ3VphhAyStGsR4mxBLkwAMgSt+atsmwO9uFKFiqtsXw4AORoEK+UVZc8IeSojXn0x34na05R45+YwyvrBQnWEwXA0M4MPbT5QjgAFIiVeEpSG+T4U3TgkY4ViuEAUCCa12NStPq/XZf1Sqrfy5fCAcBDOfq1RG0yQshlHQWlvXIpHKBICXeMZ3Sw1Ldc1imvJ26lHAbwt4OfDKhNKX9jNdBJTs8j5Qqh5eF1es89Bdewt9XzX08oRYkR3eG+duXKlTvqno3Ojf4PACI04HQ7Hx05H52eSCLEeTxRBscxhxgwexx34mH6Bx6BBlCtpKZPAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE1LTA3LTI1VDIxOjUwOjAwKzA4OjAwXbD3EAAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxMS0wNS0xOFQyMTowNzowMCswODowMM2jdLsAAABOdEVYdHNvZnR3YXJlAEltYWdlTWFnaWNrIDYuOC44LTEwIFExNiB4ODZfNjQgMjAxNS0wNy0xOSBodHRwOi8vd3d3LmltYWdlbWFnaWNrLm9yZwUMnDUAAAAYdEVYdFRodW1iOjpEb2N1bWVudDo6UGFnZXMAMaf/uy8AAAAXdEVYdFRodW1iOjpJbWFnZTo6SGVpZ2h0ADQ4h2CHLQAAABZ0RVh0VGh1bWI6OkltYWdlOjpXaWR0aAA0OH/PR6AAAAAZdEVYdFRodW1iOjpNaW1ldHlwZQBpbWFnZS9wbmc/slZOAAAAF3RFWHRUaHVtYjo6TVRpbWUAMTMwNTcyNDAyMMAxg4YAAAATdEVYdFRodW1iOjpTaXplADYuMTVLQkK7eGe9AAAAVnRFWHRUaHVtYjo6VVJJAGZpbGU6Ly8vaG9tZS93d3dyb290L3d3dy5lYXN5aWNvbi5uZXQvY2RuLWltZy5lYXN5aWNvbi5jbi9zcmMvMTUzLzE1MzAzLnBuZ7dvSFQAAAAASUVORK5CYII=) no-repeat;
+            background-size: contain;
+        }
+        
+        #crab_popup_box .next {
+            right: 0;
+        }
+        
+        #crab_popup_box .next:before {
+            right: 50px;
+        }
+        
+        #crab_popup_box .next:after {
+            right: 75px;
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAKYSURBVEjHlZVJaxRRFIW/V11dne6OioKaONEOGJIQR4xiwOkPGBz2CmpEN25EEN2IiSAq4oAbF7py4cpfIIgIaYeIUyQIDhiJimgiPXe/48Ky6CTdSXlqd86937tV9apehBBaS5PTfHDBzaYfzUPNdmRcFpm+fQ3ATvrUwiYyDDaVRv4HsIoK7OACK4BZbFFML+dn5/PVz53pAMJ06pJts1gsdqb2aZWqcneq5nbAdpjzrA6sX1w0jwgLECzjsrYGxqjpNddt8XUYQCvCLjLn2B5YBS5yzRYHx9XVBVg0x5zXLoxv5M0Nrir/dkJdHcAKKrPNKe0N8gJXnV6NDk2qrAlYjhKc0OEgrZhbpq8y+q5GbQ3AUmycHnOUeHA3dzijX6bWWpMBKWzE7Oe0Gv+tzl1zUl/e13lWEwBLsC67OcXswLrHcX2mrsbNtZgMyW6usNg3xANzhDef6vdXT7CIMvFt6gva4T7H9MYwlarSBbCW23QERtoc4OUwU6tqAk0KLdOr6nNO4oxoUBs1VwihhbQw0PitkUw4QIY4iQ/FYbo0y0ek1G7TfM+GA0CGKLzTZ3VphhAyStGsR4mxBLkwAMgSt+atsmwO9uFKFiqtsXw4AORoEK+UVZc8IeSojXn0x34na05R45+YwyvrBQnWEwXA0M4MPbT5QjgAFIiVeEpSG+T4U3TgkY4ViuEAUCCa12NStPq/XZf1Sqrfy5fCAcBDOfq1RG0yQshlHQWlvXIpHKBICXeMZ3Sw1Ldc1imvJ26lHAbwt4OfDKhNKX9jNdBJTs8j5Qqh5eF1es89Bdewt9XzX08oRYkR3eG+duXKlTvqno3Ojf4PACI04HQ7Hx05H52eSCLEeTxRBscxhxgwexx34mH6Bx6BBlCtpKZPAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE1LTA3LTI1VDIxOjUwOjAwKzA4OjAwXbD3EAAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxMS0wNS0xOFQyMTowNzowMCswODowMM2jdLsAAABOdEVYdHNvZnR3YXJlAEltYWdlTWFnaWNrIDYuOC44LTEwIFExNiB4ODZfNjQgMjAxNS0wNy0xOSBodHRwOi8vd3d3LmltYWdlbWFnaWNrLm9yZwUMnDUAAAAYdEVYdFRodW1iOjpEb2N1bWVudDo6UGFnZXMAMaf/uy8AAAAXdEVYdFRodW1iOjpJbWFnZTo6SGVpZ2h0ADQ4h2CHLQAAABZ0RVh0VGh1bWI6OkltYWdlOjpXaWR0aAA0OH/PR6AAAAAZdEVYdFRodW1iOjpNaW1ldHlwZQBpbWFnZS9wbmc/slZOAAAAF3RFWHRUaHVtYjo6TVRpbWUAMTMwNTcyNDAyMMAxg4YAAAATdEVYdFRodW1iOjpTaXplADYuMTVLQkK7eGe9AAAAVnRFWHRUaHVtYjo6VVJJAGZpbGU6Ly8vaG9tZS93d3dyb290L3d3dy5lYXN5aWNvbi5uZXQvY2RuLWltZy5lYXN5aWNvbi5jbi9zcmMvMTUzLzE1MzAzLnBuZ7dvSFQAAAAASUVORK5CYII=) no-repeat;
+            background-size: contain;
+            transform: rotate(180deg) translateY(50%);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="imgs" class="imgs">
+        <img class="qw" src="http://7xqekd.com1.z0.glb.clouddn.com/57a31a18fe7aaace4bba91d2/1473219055.jpg" alt="">
+        <img src="http://7xqekd.com1.z0.glb.clouddn.com/57c459f7431786b906191351/1473217770.jpg" alt="">
+        <img class="qw" src="http://img.vmeixi.com/uploads/2012/08/2012081501.jpg" alt="">
+        <img class="qw" src="http://pic.bizhi360.com/bpic/58/1058.jpg" alt="">
+        <img src="http://7xqekd.com1.z0.glb.clouddn.com/1472627398970.jpg" alt="">
+        <img src="http://7xqekd.com1.z0.glb.clouddn.com/576baabad4083d2c30a404591472379808009.jpg" alt="">
+        <img src="http://7xqekd.com1.z0.glb.clouddn.com/5795ca55122f7ec72d3069a1/1472318750.jpg" alt="">
+    </div>
+
+    <div id="imgs1" class="imgs">
+        <img class="qw" src="http://7xqekd.com1.z0.glb.clouddn.com/57a31a18fe7aaace4bba91d2/1473219055.jpg" alt="">
+        <img class="qw" src="http://7xqekd.com1.z0.glb.clouddn.com/57c459f7431786b906191351/1473217770.jpg" alt="">
+        <img class="qw" src="http://img.vmeixi.com/uploads/2012/08/2012081501.jpg" alt="">
+        <img class="qw" src="http://pic.bizhi360.com/bpic/58/1058.jpg" alt="">
+        <!--<img src="http://7xqekd.com1.z0.glb.clouddn.com/1472627398970.jpg" alt="">
+        <img src="http://7xqekd.com1.z0.glb.clouddn.com/576baabad4083d2c30a404591472379808009.jpg" alt="">
+        <img src="http://7xqekd.com1.z0.glb.clouddn.com/5795ca55122f7ec72d3069a1/1472318750.jpg" alt="">-->
+    </div>
+    <script>
+        ; (function (window, document, undefined) {
+            function Popup() {
+                const utils = {
+                    createEle(tagName, attrs) {
+                        const ele = document.createElement(tagName);
+
+                        for (const key in attrs) {
+                            if (attrs.hasOwnProperty(key)) {
+                                ele[key] = attrs[key];
+                            }
+                        }
+
+                        return ele;
+                    },
+                    extends(dest, source) {
+                        const args = arguments;
+
+                        if (args.length > 2) {
+                            return this.extends.apply(this, this.slice.call(args, 1));
+                        } else {
+                            for (const key in source) {
+                                if (source.hasOwnProperty(key)) {
+                                    dest[key] = source[key];
+                                }
+                            }
+
+                            return dest;
+                        }
+                    },
+                    slice: [].slice,
+                    getAgent() {
+                        const mobilePattern = /mobile/i;
+
+                        return {
+                            isMobile: mobilePattern.test(navigator.userAgent)
+                        }
+                    },
+                    calcDistance(p1, p2) {
+                        return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
+                    },
+                    addEvent(context, type, tag, callback) {
+                        type = ctrl.isMobile ? {
+                            'click': 'touchend'
+                        }[type] || type : type;
+
+                        if (!context) {
+                            throw new Error('未找到需绑定事件的元素');
+                        }
+
+                        // 修正参数
+                        if (arguments.length === 3) {
+                            callback = tag;
+                        }
+
+                        if (typeof context === 'string') {
+                            context = utils.slice.call(document.querySelectorAll(context), 0);
+                        }
+
+                        // 将context设置成数组
+                        context = [].concat(context);
+
+                        if (arguments.length > 3) {
+                            // 事件代理
+                            context.forEach((ctx) => {
+                                ctx.addEventListener(type, (e) => {
+                                    const trueTag = e.srcElement || e.originalTarget,
+                                        tags = this.slice.call(ctx.querySelectorAll(tag), 0),
+                                        index = tags.indexOf(trueTag);
+
+                                    if (index > -1) {
+                                        callback.call(tags[index], e, index, tags);
+                                    }
+                                })
+                            });
+                        } else {
+                            context.forEach((ctx) => {
+                                ctx.addEventListener(type, callback);
+                            });
+                        }
+
+                    }
+                };
+
+                const data = {
+                    currentIndex: 0,
+                    lastIndex: 0,
+                    currentImg: undefined,
+                    imgs: [],
+                    setImgs(imgs) {
+                        this.imgs = imgs;
+                    },
+                    setImg(index) {
+                        const maxIndex = this.imgs.length - 1;
+                        index < 0 && (index = maxIndex);
+                        index > maxIndex && (index = 0);
+
+                        this.lastIndex = this.currentImg;
+                        this.currentImg = this.imgs[index];
+                        this.currentIndex = index;
+                    }
+                };
+
+                const ui = {
+                    init() {
+                        const isMobile = ctrl.isMobile = utils.getAgent().isMobile,
+                            style = document.getElementById('crab_popup_style') || utils.createEle('style', {
+                                id: 'crab_popup_style',
+                                innerText: ''
+                            }),
+                            innerHTML = isMobile ?
+                                '<div id="crab_popup_pane"><div class="img_box"></div></div><span class="crab_popup_close"></span>' :
+                                '<span class="prev change"></span><div id="crab_popup_pane"><div class="img_box"></div><div class="page_num"></div></div><span class="crab_popup_close"></span><span class="next change"></span>',
+                            popupBox = this.box = document.getElementById('crab_popup_box') || utils.createEle('div', {
+                                id: 'crab_popup_box',
+                                className: isMobile ? 'mobile' : 'pc',
+                                innerHTML: innerHTML
+                            });
+
+                        document.head.appendChild(style);
+                        document.body.appendChild(popupBox);
+                    },
+                    currentImg: undefined,
+                    setImg() {
+                        const img = data.imgs[data.currentIndex],
+                            box = document.getElementById('crab_popup_box'),
+                            pane = document.getElementById('crab_popup_pane'),
+                            img_box = pane.querySelector('.img_box'),
+                            page_num = pane.querySelector('.page_num'),
+                            new_Img = utils.createEle('img', {
+                                onload: (e) => {
+                                    // 设置图片大小
+                                    const img = e.target,
+                                        style = window.getComputedStyle(img),
+                                        width = parseInt(style.width),
+                                        height = parseInt(style.height),
+                                        imgRatio = width / height,
+                                        scrollWidth = document.body.scrollWidth,
+                                        scrollHeight = document.body.scrollHeight,
+                                        screenRatio = scrollWidth / scrollHeight;
+
+                                    if (ctrl.isMobile) {
+                                        if (width >= height || imgRatio > screenRatio) {
+                                            img.style.width = scrollWidth + 'px';
+                                        } else {
+                                            img.style.height = scrollHeight + 'px';
+                                        }
+                                    }
+                                },
+                                src: img.src
+                            });
+
+                        img_box.innerHTML = '';
+                        img_box.appendChild(new_Img);
+                        this.currentImg = new_Img;
+                        ctrl.isMobile || (page_num.innerText = `${data.currentIndex + 1} / ${data.imgs.length}`);
+                        box.style.display = 'block';
+                        document.body.style.overflow = 'hidden';
+                        box.classList.add('show');
+                    },
+                    close() {
+                        const box = this.box;
+
+                        box.classList.remove('show');
+                        document.body.style.overflow = 'auto';
+                        setTimeout(() => {
+                            box.style.display = 'none';
+                        }, 250);
+                    }
+                };
+
+                const ctrl = {
+                    root: [],
+                    defaults: {
+                        selector: 'img',
+                        maskClosable: true
+                    },
+                    touch: { count: 0 },
+                    init(ele, opts) {
+                        if (!ele) {
+                            throw new Error('未传入DOM节点');
+                        }
+
+                        if (ele.nodeType !== 1) {
+                            ele = utils.slice.call(document.querySelectorAll(ele), 0);
+                        }
+
+                        this.root = [].concat(ele);
+                        this.opts = utils.extends({}, this.defaults, opts);
+                        ui.init();
+                        this.bindEvent();
+                    },
+                    bindEvent() {
+                        const box = document.getElementById('crab_popup_box'),
+                            close = box.querySelector('.crab_popup_close');
+
+                        this.root.forEach((r) => {
+                            utils.addEvent(r, 'click', this.opts.selector, ((e, i, imgs) => {                        
+                                const oldIndex = data.imgs.indexOf(imgs[i]);
+                                if (oldIndex > -1) {
+                                    // 点击同组图片时无须重新获取图片
+                                    this.setImg(oldIndex);
+                                } else {
+                                    // 点击别组图片时获取图片组
+                                    const contexts = [].slice.call(r.querySelectorAll(this.opts.contextSelector), 0),
+                                        img = imgs[i];
+
+                                    for (let index = contexts.length - 1; index >= 0; index--) {
+                                        const realImgs = [].slice.call(contexts[index].querySelectorAll(this.opts.selector), 0),
+                                            realIndex = realImgs.indexOf(img);
+                                        if (realIndex > -1) {
+                                            this.setImg(realIndex, realImgs);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }).bind(r));
+                        });
+
+                        if (!this.isMobile) {
+                            const prev = box.querySelector('.prev'),
+                                next = box.querySelector('.next');
+
+                            utils.addEvent(prev, 'mouseover', () => {
+                                prev.classList.add('show');
+                                next.classList.add('show');
+                            });
+
+
+                            utils.addEvent(next, 'mouseover', () => {
+                                prev.classList.add('show');
+                                next.classList.add('show');
+                            });
+
+                            utils.addEvent(prev, 'mouseleave', () => {
+                                prev.classList.remove('show');
+                                next.classList.remove('show');
+                            });
+
+                            utils.addEvent(next, 'mouseleave', () => {
+                                prev.classList.remove('show');
+                                next.classList.remove('show');
+                            });
+
+                            utils.addEvent(prev, 'click', (e) => {
+                                e.stopPropagation();
+                                this.prev();
+                            });
+
+                            utils.addEvent(next, 'click', (e) => {
+                                e.stopPropagation();
+                                this.next();
+                            });
+
+                            if (this.opts.maskClosable) {
+                                box.addEventListener('click', () => {
+                                    ui.close();
+                                });
+                            }
+                        } else {
+                            const pane = box.querySelector('#crab_popup_pane'),
+                                img = pane.querySelector('img');
+
+                            utils.addEvent(pane, 'touchstart', 'img', (e) => {
+                                const touch = e.touches[0],
+                                    touchData = this.touch;
+
+                                ui.currentImg.style.transformOrigin = `${touch.clientX}px ${touch.clientY + 10}px`;
+
+                                touchData.y = touch.clientY;
+                            });
+
+                            utils.addEvent(pane, 'touchstart', (e) => {
+                                const touch = e.touches[0],
+                                    touchData = this.touch;
+
+                                touchData.start = true;
+
+                                touchData.x = touch.clientX;
+                            });
+
+                            utils.addEvent(pane, 'touchmove', 'img', (e) => {
+                                const currentY = e.touches[0].clientY,
+                                    y = this.touch.y,
+                                    distance = Math.abs(currentY - y),
+                                    max = Math.sqrt(window.screen.height / 2);
+
+                                if (Math.abs(distance) > 30) {
+                                    this.touch.start = false;
+                                    ui.currentImg.style.transform = `scale(${2 * Math.sqrt(distance) / max})`;
+                                }
+                            });
+
+                            utils.addEvent(pane, 'touchend', (e) => {
+                                const touchData = this.touch,
+                                    touch = e.changedTouches[0],
+                                    x = touch.clientX,
+                                    distance = x - touchData.x,
+                                    dir = distance > 0 ? 1 : -1,
+                                    cb = ({
+                                        '-1': ctrl.next.bind(ctrl),
+                                        '1': ctrl.prev.bind(ctrl)
+                                    })[dir];
+
+                                if (touchData.start) {
+                                    Math.abs(distance) >= 50 && cb();
+                                    touchData.start = false;
+                                } else {
+                                    ui.currentImg.style.transform = 'scale(1)';
+                                }
+                            });
+                        }
+
+                        utils.addEvent(close, 'click', (e) => {
+                            e.stopPropagation();
+                            ui.close();
+                        });
+                    },
+                    setImg(i, imgs = data.imgs) {
+                        data.setImgs(imgs);
+                        data.setImg(i);
+                        ui.setImg();
+                    },
+                    prev() {
+                        if (this.isMobile) {
+                            ui.currentImg.style.transform = 'translateX(100%)';
+                        }
+                        data.setImg(--data.currentIndex);
+                        setTimeout(ui.setImg.bind(ui, true), 250);
+                        ui.setImg();
+                    },
+                    next() {
+                        if (this.isMobile) {
+                            ui.currentImg.style.transform = 'translateX(-100%)';
+                        }
+                        data.setImg(++data.currentIndex);
+                        ui.setImg();
+                    }
+                };
+
+                this.init = ctrl.init.bind(ctrl);
+            }
+
+            window.Popup = new Popup();
+        })(window, window.document);
+    </script>
+    <script>
+        Popup.init('body', {
+            selector: 'img',
+            maskClosable: false,
+            contextSelector: '.imgs'
+        });
+
+        var imgs = document.createElement('div');
+        imgs.className = "imgs";
+        imgs.innerHTML = '<img class="qw" src="http://7xqekd.com1.z0.glb.clouddn.com/57a31a18fe7aaace4bba91d2/1473219055.jpg" alt=""><img src="http://7xqekd.com1.z0.glb.clouddn.com/57c459f7431786b906191351/1473217770.jpg" alt=""><img class="qw" src="http://img.vmeixi.com/uploads/2012/08/2012081501.jpg" alt="">';
+
+        document.body.appendChild(imgs);
+    </script>
+</body>
+
+</html>
