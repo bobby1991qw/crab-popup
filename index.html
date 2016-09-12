@@ -205,16 +205,8 @@
         <img src="http://7xqekd.com1.z0.glb.clouddn.com/576baabad4083d2c30a404591472379808009.jpg" alt="">
         <img src="http://7xqekd.com1.z0.glb.clouddn.com/5795ca55122f7ec72d3069a1/1472318750.jpg" alt="">
     </div>
-
-    <div id="imgs1" class="imgs">
-        <img class="qw" src="http://7xqekd.com1.z0.glb.clouddn.com/57a31a18fe7aaace4bba91d2/1473219055.jpg" alt="">
-        <img class="qw" src="http://7xqekd.com1.z0.glb.clouddn.com/57c459f7431786b906191351/1473217770.jpg" alt="">
-        <img class="qw" src="http://img.vmeixi.com/uploads/2012/08/2012081501.jpg" alt="">
-        <img class="qw" src="http://pic.bizhi360.com/bpic/58/1058.jpg" alt="">
-        <!--<img src="http://7xqekd.com1.z0.glb.clouddn.com/1472627398970.jpg" alt="">
-        <img src="http://7xqekd.com1.z0.glb.clouddn.com/576baabad4083d2c30a404591472379808009.jpg" alt="">
-        <img src="http://7xqekd.com1.z0.glb.clouddn.com/5795ca55122f7ec72d3069a1/1472318750.jpg" alt="">-->
-    </div>
+    
+    <button onclick="addImg()">添加图片</button>
     <script>
         ; (function (window, document, undefined) {
             function Popup() {
@@ -563,16 +555,16 @@
     </script>
     <script>
         Popup.init('body', {
-            selector: 'img',
-            maskClosable: false,
             contextSelector: '.imgs'
         });
 
-        var imgs = document.createElement('div');
-        imgs.className = "imgs";
-        imgs.innerHTML = '<img class="qw" src="http://7xqekd.com1.z0.glb.clouddn.com/57a31a18fe7aaace4bba91d2/1473219055.jpg" alt=""><img src="http://7xqekd.com1.z0.glb.clouddn.com/57c459f7431786b906191351/1473217770.jpg" alt=""><img class="qw" src="http://img.vmeixi.com/uploads/2012/08/2012081501.jpg" alt="">';
+        function addImg() {
+            var imgs = document.createElement('div');
+            imgs.className = "imgs";
+            imgs.innerHTML = '<img class="qw" src="http://7xqekd.com1.z0.glb.clouddn.com/57a31a18fe7aaace4bba91d2/1473219055.jpg" alt=""><img src="http://7xqekd.com1.z0.glb.clouddn.com/57c459f7431786b906191351/1473217770.jpg" alt=""><img class="qw" src="http://img.vmeixi.com/uploads/2012/08/2012081501.jpg" alt="">';
 
-        document.body.appendChild(imgs);
+            document.body.appendChild(imgs);
+        }
     </script>
 </body>
 
