@@ -205,16 +205,18 @@
         <img src="http://7xqekd.com1.z0.glb.clouddn.com/576baabad4083d2c30a404591472379808009.jpg" alt="">
         <img src="http://7xqekd.com1.z0.glb.clouddn.com/5795ca55122f7ec72d3069a1/1472318750.jpg" alt="">
     </div>
-    
+
     <button onclick="addImg()">添加图片</button>
     <script>
-        ; (function (window, document, undefined) {
-            function Popup() {
-                const utils = {
-                    createEle(tagName, attrs) {
-                        const ele = document.createElement(tagName);
+        'use strict';
 
-                        for (const key in attrs) {
+        ;(function (window, document, undefined) {
+            function Popup() {
+                var utils = {
+                    createEle: function createEle(tagName, attrs) {
+                        var ele = document.createElement(tagName);
+
+                        for (var key in attrs) {
                             if (attrs.hasOwnProperty(key)) {
                                 ele[key] = attrs[key];
                             }
@@ -222,13 +224,13 @@
 
                         return ele;
                     },
-                    extends(dest, source) {
-                        const args = arguments;
+                    extends: function _extends(dest, source) {
+                        var args = arguments;
 
                         if (args.length > 2) {
                             return this.extends.apply(this, this.slice.call(args, 1));
                         } else {
-                            for (const key in source) {
+                            for (var key in source) {
                                 if (source.hasOwnProperty(key)) {
                                     dest[key] = source[key];
                                 }
@@ -237,18 +239,21 @@
                             return dest;
                         }
                     },
+
                     slice: [].slice,
-                    getAgent() {
-                        const mobilePattern = /mobile/i;
+                    getAgent: function getAgent() {
+                        var mobilePattern = /mobile/i;
 
                         return {
                             isMobile: mobilePattern.test(navigator.userAgent)
-                        }
+                        };
                     },
-                    calcDistance(p1, p2) {
+                    calcDistance: function calcDistance(p1, p2) {
                         return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
                     },
-                    addEvent(context, type, tag, callback) {
+                    addEvent: function addEvent(context, type, tag, callback) {
+                        var _this = this;
+
                         type = ctrl.isMobile ? {
                             'click': 'touchend'
                         }[type] || type : type;
@@ -271,36 +276,35 @@
 
                         if (arguments.length > 3) {
                             // 事件代理
-                            context.forEach((ctx) => {
-                                ctx.addEventListener(type, (e) => {
-                                    const trueTag = e.srcElement || e.originalTarget,
-                                        tags = this.slice.call(ctx.querySelectorAll(tag), 0),
+                            context.forEach(function (ctx) {
+                                ctx.addEventListener(type, function (e) {
+                                    var trueTag = e.srcElement || e.originalTarget,
+                                        tags = _this.slice.call(ctx.querySelectorAll(tag), 0),
                                         index = tags.indexOf(trueTag);
 
                                     if (index > -1) {
                                         callback.call(tags[index], e, index, tags);
                                     }
-                                })
+                                });
                             });
                         } else {
-                            context.forEach((ctx) => {
+                            context.forEach(function (ctx) {
                                 ctx.addEventListener(type, callback);
                             });
                         }
-
                     }
                 };
 
-                const data = {
+                var data = {
                     currentIndex: 0,
                     lastIndex: 0,
                     currentImg: undefined,
                     imgs: [],
-                    setImgs(imgs) {
+                    setImgs: function setImgs(imgs) {
                         this.imgs = imgs;
                     },
-                    setImg(index) {
-                        const maxIndex = this.imgs.length - 1;
+                    setImg: function setImg(index) {
+                        var maxIndex = this.imgs.length - 1;
                         index < 0 && (index = maxIndex);
                         index > maxIndex && (index = 0);
 
@@ -310,82 +314,81 @@
                     }
                 };
 
-                const ui = {
-                    init() {
-                        const isMobile = ctrl.isMobile = utils.getAgent().isMobile,
+                var ui = {
+                    init: function init() {
+                        var isMobile = ctrl.isMobile = utils.getAgent().isMobile,
                             style = document.getElementById('crab_popup_style') || utils.createEle('style', {
-                                id: 'crab_popup_style',
-                                innerText: ''
-                            }),
-                            innerHTML = isMobile ?
-                                '<div id="crab_popup_pane"><div class="img_box"></div></div><span class="crab_popup_close"></span>' :
-                                '<span class="prev change"></span><div id="crab_popup_pane"><div class="img_box"></div><div class="page_num"></div></div><span class="crab_popup_close"></span><span class="next change"></span>',
+                            id: 'crab_popup_style',
+                            innerText: ''
+                        }),
+                            innerHTML = isMobile ? '<div id="crab_popup_pane"><div class="img_box"></div></div><span class="crab_popup_close"></span>' : '<span class="prev change"></span><div id="crab_popup_pane"><div class="img_box"></div><div class="page_num"></div></div><span class="crab_popup_close"></span><span class="next change"></span>',
                             popupBox = this.box = document.getElementById('crab_popup_box') || utils.createEle('div', {
-                                id: 'crab_popup_box',
-                                className: isMobile ? 'mobile' : 'pc',
-                                innerHTML: innerHTML
-                            });
+                            id: 'crab_popup_box',
+                            className: isMobile ? 'mobile' : 'pc',
+                            innerHTML: innerHTML
+                        });
 
                         document.head.appendChild(style);
                         document.body.appendChild(popupBox);
                     },
+
                     currentImg: undefined,
-                    setImg() {
-                        const img = data.imgs[data.currentIndex],
+                    setImg: function setImg() {
+                        var img = data.imgs[data.currentIndex],
                             box = document.getElementById('crab_popup_box'),
                             pane = document.getElementById('crab_popup_pane'),
                             img_box = pane.querySelector('.img_box'),
                             page_num = pane.querySelector('.page_num'),
                             new_Img = utils.createEle('img', {
-                                onload: (e) => {
-                                    // 设置图片大小
-                                    const img = e.target,
-                                        style = window.getComputedStyle(img),
-                                        width = parseInt(style.width),
-                                        height = parseInt(style.height),
-                                        imgRatio = width / height,
-                                        scrollWidth = document.body.scrollWidth,
-                                        scrollHeight = document.body.scrollHeight,
-                                        screenRatio = scrollWidth / scrollHeight;
+                            onload: function onload(e) {
+                                // 设置图片大小
+                                var img = e.target,
+                                    style = window.getComputedStyle(img),
+                                    width = parseInt(style.width),
+                                    height = parseInt(style.height),
+                                    imgRatio = width / height,
+                                    scrollWidth = document.body.scrollWidth,
+                                    scrollHeight = document.body.scrollHeight,
+                                    screenRatio = scrollWidth / scrollHeight;
 
-                                    if (ctrl.isMobile) {
-                                        if (width >= height || imgRatio > screenRatio) {
-                                            img.style.width = scrollWidth + 'px';
-                                        } else {
-                                            img.style.height = scrollHeight + 'px';
-                                        }
+                                if (ctrl.isMobile) {
+                                    if (width >= height || imgRatio > screenRatio) {
+                                        img.style.width = scrollWidth + 'px';
+                                    } else {
+                                        img.style.height = scrollHeight + 'px';
                                     }
-                                },
-                                src: img.src
-                            });
+                                }
+                            },
+                            src: img.src
+                        });
 
                         img_box.innerHTML = '';
                         img_box.appendChild(new_Img);
                         this.currentImg = new_Img;
-                        ctrl.isMobile || (page_num.innerText = `${data.currentIndex + 1} / ${data.imgs.length}`);
+                        ctrl.isMobile || (page_num.innerText = data.currentIndex + 1 + ' / ' + data.imgs.length);
                         box.style.display = 'block';
                         document.body.style.overflow = 'hidden';
                         box.classList.add('show');
                     },
-                    close() {
-                        const box = this.box;
+                    close: function close() {
+                        var box = this.box;
 
                         box.classList.remove('show');
                         document.body.style.overflow = 'auto';
-                        setTimeout(() => {
+                        setTimeout(function () {
                             box.style.display = 'none';
                         }, 250);
                     }
                 };
 
-                const ctrl = {
+                var ctrl = {
                     root: [],
                     defaults: {
                         selector: 'img',
                         maskClosable: true
                     },
                     touch: { count: 0 },
-                    init(ele, opts) {
+                    init: function init(ele, opts) {
                         if (!ele) {
                             throw new Error('未传入DOM节点');
                         }
@@ -399,117 +402,128 @@
                         ui.init();
                         this.bindEvent();
                     },
-                    bindEvent() {
-                        const box = document.getElementById('crab_popup_box'),
+                    bindEvent: function bindEvent() {
+                        var _this2 = this;
+
+                        var box = document.getElementById('crab_popup_box'),
+                            pane = box.querySelector('#crab_popup_pane'),
                             close = box.querySelector('.crab_popup_close');
 
-                        this.root.forEach((r) => {
-                            utils.addEvent(r, 'click', this.opts.selector, ((e, i, imgs) => {                        
-                                const oldIndex = data.imgs.indexOf(imgs[i]);
+                        this.root.forEach(function (r) {
+                            utils.addEvent(r, 'click', _this2.opts.selector, function (e, i, imgs) {
+                                var oldIndex = data.imgs.indexOf(imgs[i]);
                                 if (oldIndex > -1) {
                                     // 点击同组图片时无须重新获取图片
-                                    this.setImg(oldIndex);
+                                    _this2.setImg(oldIndex);
                                 } else {
                                     // 点击别组图片时获取图片组
-                                    const contexts = [].slice.call(r.querySelectorAll(this.opts.contextSelector), 0),
+                                    var contexts = [].slice.call(r.querySelectorAll(_this2.opts.contextSelector), 0),
                                         img = imgs[i];
 
-                                    for (let index = contexts.length - 1; index >= 0; index--) {
-                                        const realImgs = [].slice.call(contexts[index].querySelectorAll(this.opts.selector), 0),
-                                            realIndex = realImgs.indexOf(img);
-                                        if (realIndex > -1) {
-                                            this.setImg(realIndex, realImgs);
-                                            break;
+                                    if (contexts.length) {
+                                        for (var index = contexts.length - 1; index >= 0; index--) {
+                                            var realImgs = [].slice.call(contexts[index].querySelectorAll(_this2.opts.selector), 0),
+                                                realIndex = realImgs.indexOf(img);
+                                            if (realIndex > -1) {
+                                                _this2.setImg(realIndex, realImgs);
+                                                break;
+                                            }
                                         }
+                                    } else {
+                                        _this2.setImg(i, imgs);
                                     }
                                 }
-                            }).bind(r));
+                            }.bind(r));
                         });
 
                         if (!this.isMobile) {
-                            const prev = box.querySelector('.prev'),
-                                next = box.querySelector('.next');
+                            (function () {
+                                var prev = box.querySelector('.prev'),
+                                    next = box.querySelector('.next');
 
-                            utils.addEvent(prev, 'mouseover', () => {
-                                prev.classList.add('show');
-                                next.classList.add('show');
-                            });
-
-
-                            utils.addEvent(next, 'mouseover', () => {
-                                prev.classList.add('show');
-                                next.classList.add('show');
-                            });
-
-                            utils.addEvent(prev, 'mouseleave', () => {
-                                prev.classList.remove('show');
-                                next.classList.remove('show');
-                            });
-
-                            utils.addEvent(next, 'mouseleave', () => {
-                                prev.classList.remove('show');
-                                next.classList.remove('show');
-                            });
-
-                            utils.addEvent(prev, 'click', (e) => {
-                                e.stopPropagation();
-                                this.prev();
-                            });
-
-                            utils.addEvent(next, 'click', (e) => {
-                                e.stopPropagation();
-                                this.next();
-                            });
-
-                            if (this.opts.maskClosable) {
-                                box.addEventListener('click', () => {
-                                    ui.close();
+                                utils.addEvent(prev, 'mouseover', function () {
+                                    prev.classList.add('show');
+                                    next.classList.add('show');
                                 });
-                            }
+
+                                utils.addEvent(next, 'mouseover', function () {
+                                    prev.classList.add('show');
+                                    next.classList.add('show');
+                                });
+
+                                utils.addEvent(prev, 'mouseleave', function () {
+                                    prev.classList.remove('show');
+                                    next.classList.remove('show');
+                                });
+
+                                utils.addEvent(next, 'mouseleave', function () {
+                                    prev.classList.remove('show');
+                                    next.classList.remove('show');
+                                });
+
+                                utils.addEvent(prev, 'click', function (e) {
+                                    e.stopPropagation();
+                                    _this2.prev();
+                                });
+
+                                utils.addEvent(next, 'click', function (e) {
+                                    e.stopPropagation();
+                                    _this2.next();
+                                });
+
+                                utils.addEvent(pane, 'click', function (e) {
+                                    e.stopPropagation();
+                                });
+
+                                if (_this2.opts.maskClosable) {
+                                    box.addEventListener('click', function () {
+                                        ui.close();
+                                    });
+                                }
+                            })();
                         } else {
-                            const pane = box.querySelector('#crab_popup_pane'),
-                                img = pane.querySelector('img');
+                            var img = pane.querySelector('img');
 
-                            utils.addEvent(pane, 'touchstart', 'img', (e) => {
-                                const touch = e.touches[0],
-                                    touchData = this.touch;
+                            utils.addEvent(pane, 'touchstart', 'img', function (e) {
+                                var touch = e.touches[0],
+                                    touchData = _this2.touch;
 
-                                ui.currentImg.style.transformOrigin = `${touch.clientX}px ${touch.clientY + 10}px`;
+                                ui.currentImg.style.transformOrigin = touch.clientX + 'px ' + (touch.clientY + 10) + 'px';
 
                                 touchData.y = touch.clientY;
                             });
 
-                            utils.addEvent(pane, 'touchstart', (e) => {
-                                const touch = e.touches[0],
-                                    touchData = this.touch;
+                            utils.addEvent(pane, 'touchstart', function (e) {
+                                var touch = e.touches[0],
+                                    touchData = _this2.touch;
 
                                 touchData.start = true;
 
                                 touchData.x = touch.clientX;
                             });
 
-                            utils.addEvent(pane, 'touchmove', 'img', (e) => {
-                                const currentY = e.touches[0].clientY,
-                                    y = this.touch.y,
+                            utils.addEvent(pane, 'touchmove', 'img', function (e) {
+                                var currentY = e.touches[0].clientY,
+                                    y = _this2.touch.y,
                                     distance = Math.abs(currentY - y),
                                     max = Math.sqrt(window.screen.height / 2);
 
                                 if (Math.abs(distance) > 30) {
-                                    this.touch.start = false;
-                                    ui.currentImg.style.transform = `scale(${2 * Math.sqrt(distance) / max})`;
+                                    _this2.touch.start = false;
+                                    ui.currentImg.style.transform = 'scale(' + 2 * Math.sqrt(distance) / max + ')';
                                 }
                             });
 
-                            utils.addEvent(pane, 'touchend', (e) => {
-                                const touchData = this.touch,
+                            utils.addEvent(pane, 'touchend', function (e) {
+                                var touchData = _this2.touch,
                                     touch = e.changedTouches[0],
                                     x = touch.clientX,
                                     distance = x - touchData.x,
                                     dir = distance > 0 ? 1 : -1,
-                                    cb = ({
-                                        '-1': ctrl.next.bind(ctrl),
-                                        '1': ctrl.prev.bind(ctrl)
-                                    })[dir];
+                                    cb = {
+                                    '-1': ctrl.next.bind(ctrl),
+                                    '1': ctrl.prev.bind(ctrl)
+                                }[dir];
 
                                 if (touchData.start) {
                                     Math.abs(distance) >= 50 && cb();
@@ -520,17 +534,19 @@
                             });
                         }
 
-                        utils.addEvent(close, 'click', (e) => {
+                        utils.addEvent(close, 'click', function (e) {
                             e.stopPropagation();
                             ui.close();
                         });
                     },
-                    setImg(i, imgs = data.imgs) {
+                    setImg: function setImg(i) {
+                        var imgs = arguments.length <= 1 || arguments[1] === undefined ? data.imgs : arguments[1];
+
                         data.setImgs(imgs);
                         data.setImg(i);
                         ui.setImg();
                     },
-                    prev() {
+                    prev: function prev() {
                         if (this.isMobile) {
                             ui.currentImg.style.transform = 'translateX(100%)';
                         }
@@ -538,7 +554,7 @@
                         setTimeout(ui.setImg.bind(ui, true), 250);
                         ui.setImg();
                     },
-                    next() {
+                    next: function next() {
                         if (this.isMobile) {
                             ui.currentImg.style.transform = 'translateX(-100%)';
                         }
