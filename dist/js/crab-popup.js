@@ -61,17 +61,19 @@
                     context = utils.slice.call(document.querySelectorAll(context), 0);
                 }
 
+                // 将context设置成数组
                 context = [].concat(context);
 
                 if (arguments.length > 3) {
+                    // 事件代理
                     context.forEach(function (ctx) {
-                        ctx.addEventListener(type, function () {
-                            var trueTag = event.srcElement,
+                        ctx.addEventListener(type, function (e) {
+                            var trueTag = e.srcElement || e.originalTarget,
                                 tags = _this.slice.call(ctx.querySelectorAll(tag), 0),
                                 index = tags.indexOf(trueTag);
 
                             if (index > -1) {
-                                callback.call(tags[index], index, tags);
+                                callback.call(tags[index], e, index, tags);
                             }
                         });
                     });
@@ -128,8 +130,9 @@
                     img_box = pane.querySelector('.img_box'),
                     page_num = pane.querySelector('.page_num'),
                     new_Img = utils.createEle('img', {
-                    onload: function onload() {
-                        var img = event.target,
+                    onload: function onload(e) {
+                        // 设置图片大小
+                        var img = e.target,
                             style = window.getComputedStyle(img),
                             width = parseInt(style.width),
                             height = parseInt(style.height),
@@ -193,25 +196,31 @@
                 var _this2 = this;
 
                 var box = document.getElementById('crab_popup_box'),
+                    pane = box.querySelector('#crab_popup_pane'),
                     close = box.querySelector('.crab_popup_close');
 
                 this.root.forEach(function (r) {
-
-                    utils.addEvent(r, 'click', _this2.opts.selector, function (i, imgs) {
+                    utils.addEvent(r, 'click', _this2.opts.selector, function (e, i, imgs) {
                         var oldIndex = data.imgs.indexOf(imgs[i]);
                         if (oldIndex > -1) {
+                            // 点击同组图片时无须重新获取图片
                             _this2.setImg(oldIndex);
                         } else {
+                            // 点击别组图片时获取图片组
                             var contexts = [].slice.call(r.querySelectorAll(_this2.opts.contextSelector), 0),
                                 img = imgs[i];
 
-                            for (var index = contexts.length - 1; index >= 0; index--) {
-                                var realImgs = [].slice.call(contexts[index].querySelectorAll(_this2.opts.selector), 0),
-                                    realIndex = realImgs.indexOf(img);
-                                if (realIndex > -1) {
-                                    _this2.setImg(realIndex, realImgs);
-                                    break;
+                            if (contexts.length) {
+                                for (var index = contexts.length - 1; index >= 0; index--) {
+                                    var realImgs = [].slice.call(contexts[index].querySelectorAll(_this2.opts.selector), 0),
+                                        realIndex = realImgs.indexOf(img);
+                                    if (realIndex > -1) {
+                                        _this2.setImg(realIndex, realImgs);
+                                        break;
+                                    }
                                 }
+                            } else {
+                                _this2.setImg(i, imgs);
                             }
                         }
                     }.bind(r));
@@ -242,14 +251,18 @@
                             next.classList.remove('show');
                         });
 
-                        utils.addEvent(prev, 'click', function () {
-                            event.stopPropagation();
+                        utils.addEvent(prev, 'click', function (e) {
+                            e.stopPropagation();
                             _this2.prev();
                         });
 
-                        utils.addEvent(next, 'click', function () {
-                            event.stopPropagation();
+                        utils.addEvent(next, 'click', function (e) {
+                            e.stopPropagation();
                             _this2.next();
+                        });
+
+                        utils.addEvent(pane, 'click', function (e) {
+                            e.stopPropagation();
                         });
 
                         if (_this2.opts.maskClosable) {
@@ -259,11 +272,10 @@
                         }
                     })();
                 } else {
-                    var pane = box.querySelector('#crab_popup_pane'),
-                        img = pane.querySelector('img');
+                    var img = pane.querySelector('img');
 
-                    utils.addEvent(pane, 'touchstart', 'img', function () {
-                        var touch = event.touches[0],
+                    utils.addEvent(pane, 'touchstart', 'img', function (e) {
+                        var touch = e.touches[0],
                             touchData = _this2.touch;
 
                         ui.currentImg.style.transformOrigin = touch.clientX + 'px ' + (touch.clientY + 10) + 'px';
@@ -271,8 +283,8 @@
                         touchData.y = touch.clientY;
                     });
 
-                    utils.addEvent(pane, 'touchstart', function () {
-                        var touch = event.touches[0],
+                    utils.addEvent(pane, 'touchstart', function (e) {
+                        var touch = e.touches[0],
                             touchData = _this2.touch;
 
                         touchData.start = true;
@@ -280,8 +292,8 @@
                         touchData.x = touch.clientX;
                     });
 
-                    utils.addEvent(pane, 'touchmove', 'img', function () {
-                        var currentY = event.touches[0].clientY,
+                    utils.addEvent(pane, 'touchmove', 'img', function (e) {
+                        var currentY = e.touches[0].clientY,
                             y = _this2.touch.y,
                             distance = Math.abs(currentY - y),
                             max = Math.sqrt(window.screen.height / 2);
@@ -292,9 +304,9 @@
                         }
                     });
 
-                    utils.addEvent(pane, 'touchend', function () {
+                    utils.addEvent(pane, 'touchend', function (e) {
                         var touchData = _this2.touch,
-                            touch = event.changedTouches[0],
+                            touch = e.changedTouches[0],
                             x = touch.clientX,
                             distance = x - touchData.x,
                             dir = distance > 0 ? 1 : -1,
@@ -312,8 +324,8 @@
                     });
                 }
 
-                utils.addEvent(close, 'click', function () {
-                    event.stopPropagation();
+                utils.addEvent(close, 'click', function (e) {
+                    e.stopPropagation();
                     ui.close();
                 });
             },
