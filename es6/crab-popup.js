@@ -205,13 +205,17 @@
                             const contexts = [].slice.call(r.querySelectorAll(this.opts.contextSelector), 0),
                                 img = imgs[i];
 
-                            for (let index = contexts.length - 1; index >= 0; index--) {
-                                const realImgs = [].slice.call(contexts[index].querySelectorAll(this.opts.selector), 0),
-                                    realIndex = realImgs.indexOf(img);
-                                if (realIndex > -1) {
-                                    this.setImg(realIndex, realImgs);
-                                    break;
+                            if (contexts.length) {
+                                for (let index = contexts.length - 1; index >= 0; index--) {
+                                    const realImgs = [].slice.call(contexts[index].querySelectorAll(this.opts.selector), 0),
+                                        realIndex = realImgs.indexOf(img);
+                                    if (realIndex > -1) {
+                                        this.setImg(realIndex, realImgs);
+                                        break;
+                                    }
                                 }
+                            } else {
+                                this.setImg(i, imgs);
                             }
                         }
                     }).bind(r));
